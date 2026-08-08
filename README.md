@@ -1,29 +1,83 @@
+date: Fri, 07 Aug 2026 03:45:00 GMT
 # Task Manager API 🚀
 
-A lightweight, high-performance RESTful API built with **FastAPI** and **Python** to manage daily tasks as part of the Backend practice journey.
+A small RESTful Task Manager API built with FastAPI and Python. Use it to create, read, update, and delete simple todo items while exploring FastAPI features and the auto-generated documentation.
 
 ---
 
-## 🛠️ Installation & Running
+## Features
 
-Ensure you have Python installed, then install dependencies and start the server using:
+- Minimal, dependency-free task storage (in-memory list).
+- CRUD endpoints for managing tasks: list, retrieve, create, update, delete.
+- Interactive API docs (Swagger UI and ReDoc) when the server is running.
+
+## Prerequisites
+
+- Python 3.8+
+- pip
+
+## Install & Run
+
+Install the runtime dependencies and start the development server:
 
 ```bash
-pip install fastapi uvicorn pydantic && uvicorn main:app --reload
+pip install fastapi uvicorn pydantic
+uvicorn main:app --reload
+```
 
+The server will run at http://127.0.0.1:8000 by default.
 
-The server will start at http://127.0.0.1:8000.
+## Endpoints (summary)
 
-📌API Endpoints
-MethodEndpointDescriptionSuccess StatusError StatusGET/API description & version200 OK-GET/healthHealth check endpoint200 OK-GET/tasksFetch all tasks200 OK-GET/tasks/{id}Fetch a single task by ID200 OK404 Not FoundPOST/tasksCreate a new task201 Created400 Bad RequestPUT/tasks/{id}Update task title200 OK400 Bad Request, 404 Not FoundDELETE/tasks/{id}Delete a task by ID204 No Content404 Not Found
-🧪 Sample curl -i ResponseCreating a new task:Bashcurl -i -X POST "[http://127.0.0.1:8000/tasks](http://127.0.0.1:8000/tasks)" -H "Content-Type: application/json" -d '{"title": "Learn FastAPI"}'
+- `GET /` — Return a welcome message.
+- `GET /health` — Check whether the server is running.
+- `GET /tasks` — List all tasks.
+- `GET /tasks/{id}` — Retrieve a specific task by its ID.
+- `POST /tasks` — Create a new task (JSON body: `{"title": "Your title"}`).
+- `PUT /tasks/{id}` — Update the title of an existing task (use query param `?title=...`).
+- `DELETE /tasks/{id}` — Delete a task by its ID.
 
-Output:HTTPHTTP/1.1 201 Created
-date: Fri, 07 Aug 2026 03:45:00 GMT
-server: uvicorn
-content-length: 48
-content-type: application/json
+> Note: This project uses an in-memory list for tasks, so data resets when the server restarts.
 
-{"id":4,"title":"Learn FastAPI","done":false}
+## Examples
 
-📑 Interactive Documentation (Swagger UI)FastAPI automatically generates interactive interactive API documentation.Access it while the server is running at:👉 http://127.0.0.1:8000/docs
+- List tasks
+
+```bash
+curl http://127.0.0.1:8000/tasks
+```
+
+- Get a single task
+
+```bash
+curl http://127.0.0.1:8000/tasks/1
+```
+
+- Create a task
+
+```bash
+curl -i -X POST "http://127.0.0.1:8000/tasks" -H "Content-Type: application/json" -d '{"title": "Learn FastAPI"}'
+```
+
+- Update a task's title (query parameter)
+
+```bash
+curl -X PUT "http://127.0.0.1:8000/tasks/1?title=New%20Title"
+```
+
+- Delete a task
+
+```bash
+curl -i -X DELETE "http://127.0.0.1:8000/tasks/1"
+```
+
+## Interactive Documentation
+
+FastAPI provides interactive docs at:
+
+- Swagger UI: http://127.0.0.1:8000/docs
+- ReDoc: http://127.0.0.1:8000/redoc
+
+## Contributing
+
+Contributions are welcome. If you fix bugs or improve the API, open a PR or send a patch and describe the change.
