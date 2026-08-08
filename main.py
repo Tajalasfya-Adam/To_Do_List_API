@@ -43,3 +43,22 @@ async def one_task(id: int):
             return task
     raise HTTPException(status_code=404, detail={"error": f"Task {id} not found"})
 
+#there is a bug here i must check
+@app.post("/tasks", status_code = 201)
+async def create_item(task: taskCreate):
+    if task.title == "" or task.title== "string":
+        raise HTTPException(status_code=400, detail=f"Title is requierd")
+    else:
+        """this list comprehension generates a list full of
+          already existed tasks then generate new id number
+            by taking the max of them + 1"""
+        newId = max([i["id"] for i in tasks], defult=0) + 1 
+
+        newTask = {"title":taskCreate.title,
+                "id":newId,  
+                "done":False}
+        
+        tasks.append(newTask)
+        return newTask
+
+
