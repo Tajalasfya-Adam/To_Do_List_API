@@ -16,27 +16,27 @@ class taskCreate(BaseModel):
 
 
 #root func
-@app.get("/")
+@app.get("/", summary="Return a welcome message")
 async def root():
     return {"message":"Hello Server"}
 
 #to describe this API
-@app.get("/")
+@app.get("/", summary="Return API metadata and available endpoints")
 def describe():
     return { "name": "Task API", "version": "1.0", "endpoints": ["/tasks"] }
 
 #to check the server status
-@app.get("/health")
+@app.get("/health", summary="Check whether the server is running")
 def server_health():
     return { "status": "ok" }
 
 #endpoints start from here
 
-@app.get("/tasks")
+@app.get("/tasks", summary="List all tasks")
 def all_tasks():
     return tasks
 
-@app.get("/tasks/{id}")
+@app.get("/tasks/{id}", summary="Retrieve a specific task by its ID")
 async def one_task(id: int):
     for task in tasks:
         if task["id"] == id:
@@ -44,7 +44,7 @@ async def one_task(id: int):
     raise HTTPException(status_code=404, detail={"error": f"Task {id} not found"})
 
 #there is a bug here i must check
-@app.post("/tasks", status_code = 201)
+@app.post("/tasks", status_code = 201, summary="Create a new task")
 async def create_item(task: taskCreate):
     if task.title == "" or task.title== "string":
         raise HTTPException(status_code=400, detail=f"Title is requierd")
@@ -62,7 +62,7 @@ async def create_item(task: taskCreate):
         return newTask
 
 #i must check
-@app.put("/tasks/{id}")
+@app.put("/tasks/{id}", summary="Update the title of an existing task")
 async def updateItem(id : int, title: str):
     for task in tasks:
         if id == task["id"]:
@@ -72,7 +72,7 @@ async def updateItem(id : int, title: str):
             raise HTTPException(status_code=400, detail=f"item {id} not found")
 
 #i must check
-@app.delete("/tasks/{id}", status_code=204)
+@app.delete("/tasks/{id}", status_code=204, summary="Delete a task by its ID")
 async def deleteItem(id: int):
     if id == tasks["id"]:
         tasks.remove(id)
