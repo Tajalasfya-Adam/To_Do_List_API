@@ -61,7 +61,7 @@ async def create_item(task: taskCreate):
         tasks.append(newTask)
         return newTask
 
-#i must check
+#i must check to maintain
 @app.put("/tasks/{id}", summary="Update the title of an existing task")
 async def updateItem(id : int, title: str):
     for task in tasks:
@@ -71,7 +71,7 @@ async def updateItem(id : int, title: str):
         else:
             raise HTTPException(status_code=400, detail=f"item {id} not found")
 
-#i must check
+#i must check to maintain
 @app.delete("/tasks/{id}", status_code=204, summary="Delete a task by its ID")
 async def deleteItem(id: int):
     if id == tasks["id"]:
