@@ -61,4 +61,26 @@ async def create_item(task: taskCreate):
         tasks.append(newTask)
         return newTask
 
+#i must check
+@app.put("/tasks/{id}")
+async def updateItem(id : int, title: str):
+    for task in tasks:
+        if id == task["id"]:
+            tasks.replace(task.title, title)
+            return f"item updated"
+        else:
+            raise HTTPException(status_code=400, detail=f"item {id} not found")
 
+#i must check
+@app.delete("/tasks/{id}", status_code=204)
+async def deleteItem(id: int):
+    if id == tasks["id"]:
+        tasks.remove(id)
+        return "success"
+    else:
+        raise HTTPException(status_code=404, detail="No content")
+
+
+# ==========================================
+#mission completed, a litle celibration (:
+# ==========================================
