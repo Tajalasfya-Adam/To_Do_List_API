@@ -10,3 +10,13 @@ app = FastAPI()
 async def root():
     return {"message":"Hello Server"}
 
+#to describe this API
+@app.get("/")
+def describe():
+    return { "name": "Task API", "version": "1.0", "endpoints": ["/tasks"] }
+
+#to check the server status
+@app.get("/health")
+def server_health():
+    return { "status": "ok" }
+
