@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException #fastapi framwork that used to create this API
 from pydantic import BaseModel #pydantic library to send requests in json format
 
-app = FastAPI()
+app = FastAPI(title = "To_Do_List API")
 
 #temporary database
 tasks = [
@@ -11,8 +11,8 @@ tasks = [
 
 ]
 
-class taskCreate(BaseModel):
-    title: str = None
+class TaskCreate(BaseModel):
+    title: str
 
 
 #root func
@@ -21,7 +21,7 @@ async def root():
     return {"message":"Hello Server"}
 
 #to describe this API
-@app.get("/", summary="Return API metadata and available endpoints")
+@app.get("/info", summary="Return API metadata and available endpoints")
 def describe():
     return { "name": "Task API", "version": "1.0", "endpoints": ["/tasks"] }
 
@@ -32,6 +32,7 @@ def server_health():
 
 #endpoints start from here
 
+# It returns all the tasks
 @app.get("/tasks", summary="List all tasks")
 def all_tasks():
     return tasks
@@ -43,42 +44,39 @@ async def one_task(id: int):
             return task
     raise HTTPException(status_code=404, detail={"error": f"Task {id} not found"})
 
-#there is a bug here i must check
+# Creating new tasks endpoint
 @app.post("/tasks", status_code = 201, summary="Create a new task")
-async def create_item(task: taskCreate):
-    if task.title == "" or task.title== "string":
-        raise HTTPException(status_code=400, detail=f"Title is requierd")
-    else:
-        """this list comprehension generates a list full of
-          already existed tasks then generate new id number
-            by taking the max of them + 1"""
-        newId = max([i["id"] for i in tasks], defult=0) + 1 
+async def create_item(task: TaskCreate):
+    if not task.title or task.title.strip() == "":
+        raise HTTPException(status_code=400, detail="Title is required")
 
-        newTask = {"title":taskCreate.title,
-                "id":newId,  
-                "done":False}
-        
-        tasks.append(newTask)
-        return newTask
+    # generate new id (max existing id + 1)
+    newId = max([i["id"] for i in tasks], default=0) + 1
 
-#i must check to maintain
+    newTask = {"title": task.title,
+               "id": newId,
+               "done": False}
+
+    tasks.append(newTask)
+    return newTask
+
+# Update task's endpoint
 @app.put("/tasks/{id}", summary="Update the title of an existing task")
-async def updateItem(id : int, title: str):
+async def updateItem(id: int, title: str):
     for task in tasks:
         if id == task["id"]:
-            tasks.replace(task.title, title)
-            return f"item updated"
-        else:
-            raise HTTPException(status_code=400, detail=f"item {id} not found")
-
-#i must check to maintain
+            task["title"] = title
+            return {"detail": "item updated"}
+    raise HTTPException(status_code=404, detail=f"item {id} not found")
+        
+# Delete task's endpoint
 @app.delete("/tasks/{id}", status_code=204, summary="Delete a task by its ID")
 async def deleteItem(id: int):
-    if id == tasks["id"]:
-        tasks.remove(id)
-        return "success"
-    else:
-        raise HTTPException(status_code=404, detail="No content")
+    for task in tasks:
+        if id == task["id"]:
+            tasks.remove(task)
+            return None
+    raise HTTPException(status_code=404, detail="Task not found")
 
 
 # ==========================================
