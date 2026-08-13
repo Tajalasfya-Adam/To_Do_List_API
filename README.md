@@ -81,3 +81,9 @@ FastAPI provides interactive docs at:
 ## Contributing
 
 Contributions are welcome. If you fix bugs or improve the API, open a PR or send a patch and describe the change.
+
+## API Screenshot
+
+The following screenshot shows the API documentation UI (Swagger) while the server is running:
+
+![API documentation screenshot](api_screenshot.png)
