@@ -5,6 +5,43 @@ A small RESTful Task Manager API built with FastAPI and Python. Use it to create
 
 ---
 
+## Database Viewer Screenshot
+
+A visual HTML database viewer has been included in the project. You can open it to inspect the SQLite database contents:
+
+**File:** `db_viewer.html`
+
+The database viewer shows all tasks currently stored in the SQLite database with their IDs, titles, and completion status.
+
+**Database contents visualization:**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│         📊 SQLite Database Viewer - Task Manager            │
+├─────────────────────────────────────────────────────────────┤
+│ Database File: ./tasks.db                                   │
+│ Table Name: tasks                                           │
+│ Total Records: 6                                            │
+├─────┬───────────────────────┬─────────────────────────────┤
+│ ID  │ Title                 │ Completed                   │
+├─────┼───────────────────────┼─────────────────────────────┤
+│ 0   │ testing put           │ ✓ True  (green)            │
+│ 1   │ study linear algebra  │ ✗ False (orange)           │
+│ 2   │ stage 0               │ ✓ True  (green)            │
+│ 3   │ buy milk              │ ✗ False (orange)           │
+│ 4   │ string                │ ✓ True  (green)            │
+│ 5   │ string                │ ✓ True  (green)            │
+└─────┴───────────────────────┴─────────────────────────────┘
+```
+
+The database viewer includes:
+- Database file location: `./tasks.db`
+- Table name: `tasks`
+- All records with their current state
+- Color-coded completion status (green for completed, orange for pending)
+
+---
+
 ## Features
 
 - **SQLite Database Storage** - Persistent task storage with automatic database initialization.
@@ -106,41 +143,6 @@ curl -i -X DELETE "http://127.0.0.1:8000/tasks/1"
 ```
 
 > Note: All data is persisted to the SQLite database (`tasks.db`) and will be available after restarting the server.
-
-## Database Viewer
-
-A visual HTML database viewer has been included in the project. You can open it to inspect the SQLite database contents:
-
-**File:** `db_viewer.html`
-
-Open this file in your browser to see all tasks currently stored in the database with their IDs, titles, and completion status.
-
-The database viewer shows:
-- Database file location: `./tasks.db`
-- Table name: `tasks`
-- All records with their current state
-- Color-coded completion status (green for completed, orange for pending)
-
-Below is a screenshot of the database viewer displaying the current tasks:
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│         📊 SQLite Database Viewer - Task Manager            │
-├─────────────────────────────────────────────────────────────┤
-│ Database File: ./tasks.db                                   │
-│ Table Name: tasks                                           │
-│ Total Records: 6                                            │
-├─────┬───────────────────────┬─────────────────────────────┤
-│ ID  │ Title                 │ Completed                   │
-├─────┼───────────────────────┼─────────────────────────────┤
-│ 0   │ testing put           │ ✓ True  (green)            │
-│ 1   │ study linear algebra  │ ✗ False (orange)           │
-│ 2   │ stage 0               │ ✓ True  (green)            │
-│ 3   │ buy milk              │ ✗ False (orange)           │
-│ 4   │ string                │ ✓ True  (green)            │
-│ 5   │ string                │ ✓ True  (green)            │
-└─────┴───────────────────────┴─────────────────────────────┘
-```
 
 ## Interactive Documentation
 
