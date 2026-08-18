@@ -7,9 +7,12 @@ from typing import Optional, List
 
 # bulding the model
 class Tasks(SQLModel, table = True):
-    id : int = Field(primary_key = True, index = True)
+    id : Optional[int] = Field(default = None, primary_key = True, index = True)
     title : str = Field(index = True)
-    done : bool = Field(index = True)
+    done : bool = Field(default=False, index = True)
+
+class NewTask(SQLModel):
+    title:str = Field(index=True)
 
 
 # The API start from here
@@ -85,23 +88,20 @@ async def one_task(id: int, session:Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail={"error": f"Task {id} not found"})
     return task
 
-"""# Creating new tasks endpoint
+# Creating new tasks endpoint
 @app.post("/tasks", status_code = 201, response_model=Tasks, summary="Create a new task")
-async def create_item(task: TaskCreate):
-    if not task.title or task.title.strip() == "":
+async def create_item(payload:NewTask, session:Session=Depends(get_session)):
+    if payload.title =="string" or payload.title.strip() == "": #to make sure the title is not empty or "sting"
         raise HTTPException(status_code=400, detail="Title is required")
 
-    # generate new id (max existing id + 1)
-    newId = max([i["id"] for i in tasks], default=0) + 1
+    new_task = Tasks.model_validate(payload)
 
-    newTask = {"title": task.title,
-               "id": newId,
-               "done": False}
+    session.add(new_task)
+    session.commit()
+    session.refresh(new_task)
+    return new_task
 
-    tasks.append(newTask)
-    return newTask
-
-# Update task's endpoint
+"""# Update task's endpoint
 @app.put("/tasks/{id}", response_model=Tasks, summary="Update the title of an existing task")
 async def updateItem(id: int, title: str):
     for task in tasks:
