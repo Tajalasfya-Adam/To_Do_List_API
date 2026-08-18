@@ -1,7 +1,8 @@
-from fastapi import FastAPI, HTTPException #fastapi framwork that used to create this API
+from fastapi import FastAPI, HTTPException, Depends #fastapi framwork that used to create this API
 from pydantic import BaseModel #pydantic library to send requests in json format
 from sqlmodel import SQLModel, Field, create_engine, Session, select #sqlmodel library responsible of the database
 from contextlib import asynccontextmanager
+from typing import Optional, List
 
 
 # bulding the model
@@ -36,13 +37,6 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title = "To_Do_List API", lifespan=lifespan)
 
 
-"""#temporary database (I am going to delete it after attach the api with real database)
-tasks = [
-    {"id":1, "title":"buy milk", "done":False},
-    {"id":2, "title":"get new hair cut", "done":False},
-    {"id":3, "title":"wash the dishes", "done":False}
-
-]"""
 
 # to determine when to create the tasks.db file in the harddisk
 @app.on_event("startup")
@@ -73,22 +67,26 @@ def describe():
 def server_health():
     return { "status": "ok" }
 
+
+
 #endpoints start from here
 
 # It returns all the tasks
-@app.get("/tasks", summary="List all tasks")
-def all_tasks():
-    return tasks
+@app.get("/tasks", response_model=List[Tasks], summary="List all tasks")
+def all_tasks(session:Session = Depends(get_session)):
+    task = select(Tasks)
+    statement = session.exec(task).all()
+    return statement
 
-@app.get("/tasks/{id}", summary="Retrieve a specific task by its ID")
-async def one_task(id: int):
-    for task in tasks:
-        if task["id"] == id:
-            return task
-    raise HTTPException(status_code=404, detail={"error": f"Task {id} not found"})
+@app.get("/tasks/{id}", response_model=Tasks, summary="Retrieve a specific task by its ID")
+async def one_task(id: int, session:Session = Depends(get_session)):
+    task = session.get(Tasks, id)
+    if not task:
+        raise HTTPException(status_code=404, detail={"error": f"Task {id} not found"})
+    return task
 
-# Creating new tasks endpoint
-@app.post("/tasks", status_code = 201, summary="Create a new task")
+"""# Creating new tasks endpoint
+@app.post("/tasks", status_code = 201, response_model=Tasks, summary="Create a new task")
 async def create_item(task: TaskCreate):
     if not task.title or task.title.strip() == "":
         raise HTTPException(status_code=400, detail="Title is required")
@@ -104,7 +102,7 @@ async def create_item(task: TaskCreate):
     return newTask
 
 # Update task's endpoint
-@app.put("/tasks/{id}", summary="Update the title of an existing task")
+@app.put("/tasks/{id}", response_model=Tasks, summary="Update the title of an existing task")
 async def updateItem(id: int, title: str):
     for task in tasks:
         if id == task["id"]:
@@ -113,13 +111,13 @@ async def updateItem(id: int, title: str):
     raise HTTPException(status_code=404, detail=f"item {id} not found")
         
 # Delete task's endpoint
-@app.delete("/tasks/{id}", status_code=204, summary="Delete a task by its ID")
+@app.delete("/tasks/{id}", status_code=204, response_model=Tasks, summary="Delete a task by its ID")
 async def deleteItem(id: int):
     for task in tasks:
         if id == task["id"]:
             tasks.remove(task)
             return None
-    raise HTTPException(status_code=404, detail="Task not found")
+    raise HTTPException(status_code=404, detail="Task not found")"""
 
 
 # ==========================================
