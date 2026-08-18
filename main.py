@@ -1,15 +1,58 @@
 from fastapi import FastAPI, HTTPException #fastapi framwork that used to create this API
 from pydantic import BaseModel #pydantic library to send requests in json format
+from sqlmodel import SQLModel, Field, create_engine, Session, select #sqlmodel library responsible of the database
+from contextlib import asynccontextmanager
 
-app = FastAPI(title = "To_Do_List API")
 
-#temporary database
+# bulding the model
+class Tasks(SQLModel, table = True):
+    id : int = Field(primary_key = True, index = True)
+    title : str = Field(index = True)
+    done : bool = Field(index = True)
+
+
+# The API start from here
+engine = create_engine("sqlite:///./tasks.db", echo = True) # engine is the object the handles the communication between the API and database
+
+#this is important it check the tasks.db file
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    SQLModel.metadata.create_all(engine)
+
+    with Session(engine) as session:
+        statement = select(Tasks)
+        results = session.exec(statement).first()
+
+        if not results:
+            example_tasks = [
+                Tasks(title = "study linear algebra", done = False),
+                Tasks(title = "stage 0", done = True),
+                Tasks(title = "buy milk", done = False)
+            ]
+            session.add_all(example_tasks)
+            session.commit()
+    yield
+
+app = FastAPI(title = "To_Do_List API", lifespan=lifespan)
+
+
+"""#temporary database (I am going to delete it after attach the api with real database)
 tasks = [
     {"id":1, "title":"buy milk", "done":False},
     {"id":2, "title":"get new hair cut", "done":False},
     {"id":3, "title":"wash the dishes", "done":False}
 
-]
+]"""
+
+# to determine when to create the tasks.db file in the harddisk
+@app.on_event("startup")
+def on_event():
+    SQLModel.metadata.create_all(engine)
+
+def get_session():
+    with Session(engine) as session:
+        yield session
+
 
 class TaskCreate(BaseModel):
     title: str
