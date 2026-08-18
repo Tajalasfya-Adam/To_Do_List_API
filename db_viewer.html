@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQLite Database Viewer - Task Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        thead {
+            background-color: #667eea;
+            color: white;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            border: none;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .id-cell {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .done-true {
+            background-color: #c8e6c9;
+            color: #2e7d32;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .done-false {
+            background-color: #ffccbc;
+            color: #d84315;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .db-info {
+            background-color: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .db-info p {
+            margin: 5px 0;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .db-info code {
+            background-color: #e8eaf6;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 SQLite Database Viewer</h1>
+        <p class="subtitle">Task Manager Database Schema and Contents</p>
+        
+        <div class="db-info">
+            <p><strong>Database File:</strong> <code>./tasks.db</code></p>
+            <p><strong>Table Name:</strong> <code>tasks</code></p>
+            <p><strong>Total Records:</strong> <span id="record-count">Loading...</span></p>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Completed</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="id-cell">0</td>
+                    <td>testing put</td>
+                    <td><span class="done-true">✓ True</span></td>
+                </tr>
+                <tr>
+                    <td class="id-cell">1</td>
+                    <td>study linear algebra</td>
+                    <td><span class="done-false">✗ False</span></td>
+                </tr>
+                <tr>
+                    <td class="id-cell">2</td>
+                    <td>stage 0</td>
+                    <td><span class="done-true">✓ True</span></td>
+                </tr>
+                <tr>
+                    <td class="id-cell">3</td>
+                    <td>buy milk</td>
+                    <td><span class="done-false">✗ False</span></td>
+                </tr>
+                <tr>
+                    <td class="id-cell">4</td>
+                    <td>string</td>
+                    <td><span class="done-true">✓ True</span></td>
+                </tr>
+                <tr>
+                    <td class="id-cell">5</td>
+                    <td>string</td>
+                    <td><span class="done-true">✓ True</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <script>
+        // Update record count
+        document.getElementById('record-count').textContent = document.querySelectorAll('tbody tr').length;
+    </script>
+</body>
+</html>
