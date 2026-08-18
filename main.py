@@ -6,14 +6,18 @@ from typing import Optional, List
 
 
 # bulding the model
-class Tasks(SQLModel, table = True):
+class Tasks(SQLModel, table = True): # main model
     id : Optional[int] = Field(default = None, primary_key = True, index = True)
     title : str = Field(index = True)
     done : bool = Field(default=False, index = True)
 
+#responsible of new tasks
 class NewTask(SQLModel):
     title:str = Field(index=True)
 
+#responsible of updating tasks
+class UpdateTask(SQLModel):
+    title:Optional[str] = Field(index = True)
 
 # The API start from here
 engine = create_engine("sqlite:///./tasks.db", echo = True) # engine is the object the handles the communication between the API and database
@@ -101,24 +105,29 @@ async def create_item(payload:NewTask, session:Session=Depends(get_session)):
     session.refresh(new_task)
     return new_task
 
-"""# Update task's endpoint
+# Update task's endpoint
 @app.put("/tasks/{id}", response_model=Tasks, summary="Update the title of an existing task")
-async def updateItem(id: int, title: str):
-    for task in tasks:
-        if id == task["id"]:
-            task["title"] = title
-            return {"detail": "item updated"}
-    raise HTTPException(status_code=404, detail=f"item {id} not found")
+async def updateItem(id: int, title: UpdateTask, session:Session = Depends(get_session)):
+    task = session.get(Tasks, id)
+    if not task:
+        raise HTTPException(status_code=404, detail=f"item {id} not found")
+    
+    task.title = title.title
+    session.add(task)
+    session.commit()
+    session.refresh(task)
+    return task
         
 # Delete task's endpoint
-@app.delete("/tasks/{id}", status_code=204, response_model=Tasks, summary="Delete a task by its ID")
-async def deleteItem(id: int):
-    for task in tasks:
-        if id == task["id"]:
-            tasks.remove(task)
-            return None
-    raise HTTPException(status_code=404, detail="Task not found")"""
+@app.delete("/tasks/{id}", status_code=204, summary="Delete a task by its ID")
+async def deleteItem(id: int, session:Session = Depends(get_session)):
+    task = session.get(Tasks, id)
 
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    session.delete(task)
+    session.commit()
 
 # ==========================================
 #mission completed, a litle celibration (:
